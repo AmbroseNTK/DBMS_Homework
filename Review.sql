@@ -2,12 +2,14 @@ CREATE OR ALTER TRIGGER trg_password ON NHANVIEN
 FOR INSERT, UPDATE, DELETE
 AS
 BEGIN
-    DECLARE @pass NVARCHAR(8);
+    DECLARE @pass NVARCHAR(50);
     SET @pass = (SELECT inserted.pass FROM inserted);
-    IF (LEN(@pass)<0 AND LEN(@pass)>8)
-        RAISERROR('Invailid password',16,1);
+    IF (LEN(@pass)<1 OR LEN(@pass)>8)
+        RAISERROR('Invailid password',11,1);
 END;
 
-UPDATE NHANVIEN SET pass = '' WHERE MaNV='123'
+UPDATE NHANVIEN SET pass = '123456789' WHERE MaNV='123'
 
-DROP TRIGGER trg_NVMK
+SELECT * FROM NHANVIEN WHERE NHANVIEN.MaNV = '123'
+
+ALTER TABLE NHANVIEN ALTER COLUMN pass NVARCHAR(50)
