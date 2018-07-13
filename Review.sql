@@ -1,20 +1,20 @@
-CREATE OR ALTER TRIGGER trg_password ON NHANVIEN
-FOR INSERT, UPDATE, DELETE
-AS
+DECLARE cur_nv CURSOR FOR
+SELECT NHANVIEN.TenNV FROM NHANVIEN WHERE NHANVIEN.Phong = '4'
+
+OPEN cur_nv;
+
+DECLARE @tenNV NVARCHAR(50), @stt int;
+SET @stt = 1;
+
+FETCH NEXT FROM cur_nv INTO @tenNV
+
+WHILE @@FETCH_STATUS = 0
 BEGIN
-    DECLARE @pass NVARCHAR(50);
-    SET @pass = (SELECT inserted.pass FROM inserted);
-    IF (LEN(@pass)<1 OR LEN(@pass)>8)
-        RAISERROR('Invailid password',11,1);
-END;
+    PRINT('Nhan vien thu '+str(@stt)+': '+@tenNV);
+    SET @stt = @stt+1;
 
-UPDATE NHANVIEN SET pass = '123456789' WHERE MaNV='123'
+    FETCH NEXT FROM cur_nv INTO @tenNV;
+END
 
-SELECT * FROM NHANVIEN WHERE NHANVIEN.MaNV = '123'
-
-ALTER TABLE NHANVIEN ALTER COLUMN pass NVARCHAR(50)
-
-DROP TRIGGER trg_password
-
-ALTER TABLE NHANVIEN WITH NOCHECK ADD CONSTRAINT chk_pass CHECK(LEN(NHANVIEN.pass)>0 AND LEN(NHANVIEN.pass)<9)
+CLOSE cur_nv;
 
